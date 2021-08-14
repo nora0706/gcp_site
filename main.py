@@ -1,5 +1,7 @@
-# [START gae_python38_app]
+# [START gae_python39_app]
 # [START gae_python3_app]
+from datetime import datetime
+
 from flask import Flask
 
 
@@ -16,7 +18,7 @@ def hello():
 @app.route('/<name>')
 def helloName(name = 'World'):
     """Return a friendly HTTP greeting."""
-    return 'Hello ' + str(name) + '!'
+    return str(datetime.now())+'<br />Hello ' + str(name) + '!'
 
 
 if __name__ == '__main__':
@@ -25,4 +27,4 @@ if __name__ == '__main__':
     # can be configured by adding an `entrypoint` to app.yaml.
     app.run(host='127.0.0.1', port=8082, debug=True)
 # [END gae_python3_app]
-# [END gae_python38_app]
+# [END gae_python39_app]
