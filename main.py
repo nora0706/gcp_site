@@ -17,7 +17,7 @@ def hello():
 @app.route('/<name>')
 def helloName(name = 'World'):
     """Return a friendly HTTP greeting."""
-    return str(datetime.now())+'<br />Hello ' + str(name) + '!'
+    return str(datetime.now())+'<br /><h1>Hello ' + str(name) + '!</h1>'
 
 
 if __name__ == '__main__':
