@@ -1,7 +1,11 @@
 # [START gae_python39_app]
 # [START gae_python3_app]
+import os
+import json
 from datetime import datetime
 from flask import Flask
+from google.cloud import secretmanager
+
 
 
 # If `entrypoint` is not defined in app.yaml, App Engine will look for an app
@@ -19,6 +23,13 @@ def helloName(name = 'World'):
     """Return a friendly HTTP greeting."""
     return str(datetime.now())+'<br /><h1>Hello ' + str(name) + '!</h1>'
 
+@app.route('/health')
+def health():
+    return 'I am healty!'
+
+@app.route('/env')
+def env():
+    return dict(os.environ)
 
 if __name__ == '__main__':
     # This is used when running locally only. When deploying to Google App
