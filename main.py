@@ -1,15 +1,43 @@
 # [START gae_python39_app]
 # [START gae_python3_app]
-import os
 from datetime import datetime
-from flask import Flask
+from flask import Flask, render_template
 from google.cloud import secretmanager
 
+from database import MySQL
+from secret import Secret
 
 
 # If `entrypoint` is not defined in app.yaml, App Engine will look for an app
 # called `app` in `main.py`.
-app = Flask(__name__)
+app = Flask(__name__, template_folder='template')
+gsecret = Secret()
+
+dns = {
+    'user': gsecret.get_secret('DB_USER'),
+    'host': gsecret.get_secret('DB_HOST'),
+    'password': gsecret.get_secret('DB_PASS'),
+    'database': 'testdb'
+}
+db = MySQL(**dns)
+
+
+@app.route('/dogs')
+def dogs():
+    props = {'title': 'Dog List', 'msg': 'Dogs List'}
+    stmt = 'SELECT * FROM dog;'
+    dogs = db.query(stmt)
+    html = render_template('dogs.html', props=props, dogs=dogs)
+    return html
+
+
+@app.route('/dog/<int:id>')
+def dog(id):
+    props = {'title': 'Dog Information', 'msg': 'Dog Information'}
+    stmt = 'SELECT * FROM dog WHERE id = ?;'
+    dog = db.query(stmt, id, prepared=True)
+    html = render_template('dog.html', props=props, dog=dog[0])
+    return html
 
 
 @app.route('/')
@@ -29,21 +57,7 @@ def health():
 
 @app.route('/secret')
 def secret():
-    # Create the Secret Manager client.
-    client = secretmanager.SecretManagerServiceClient()
-
-    project_id = os.getenv('GOOGLE_CLOUD_PROJECT')
-    # Build the parent name from the project.
-    name = f"projects/{project_id}/secrets/test/versions/latest"
-
-    # Access the secret version.
-    response = client.access_secret_version(request={"name": name})
-
-    # Print the secret payload.
-    #
-    # WARNING: Do not print the secret in a production environment - this
-    # snippet is showing how to access the secret material.
-    payload = response.payload.data.decode("UTF-8")
+    payload = gsecret.get_secret('test')
     return str(payload)
 
 if __name__ == '__main__':
