@@ -1,7 +1,6 @@
 # [START gae_python39_app]
 # [START gae_python3_app]
 from datetime import datetime
-
 from flask import Flask
 
 
